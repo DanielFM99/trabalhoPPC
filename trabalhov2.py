@@ -3,15 +3,15 @@ import random
 import collections
 import time
 
-class Client(threading.Thread):
 
-    drink = True
-    eventWait = threading.Event()
+class Client(threading.Thread):
 
     def __init__(self, clientNumber, saloon):
         threading.Thread.__init__(self)
         self.clientNumber = clientNumber
         self.saloon = saloon
+        self.drink = True
+        self.eventWait = threading.Event()
 
     def proceed(self):
         self.eventWait.set()
@@ -58,13 +58,12 @@ class Client(threading.Thread):
 
 class Waiter(threading.Thread):
 
-    orderNoted = []
-
     def __init__(self, maxClients, waiterNumber, saloon):
         threading.Thread.__init__(self)
         self.maxClients = maxClients
         self.waiterNumber = waiterNumber
         self.saloon = saloon
+        self.orderNoted = []
 
     def receiveMaxOrder(self):
         maxOrder = len(self.orderNoted)
@@ -112,20 +111,19 @@ class Waiter(threading.Thread):
 
 class Saloon(threading.Thread):
 
-    arrDrink = collections.deque([], 1)
-    arrNoDrink = collections.deque([], 1)
-    lock = threading.Condition()
-    lockAux = threading.Condition()
-    waitAllToDrink = threading.Condition()
-    empty = threading.Semaphore(1)
-    full = threading.Semaphore(0)
-    totalOrdered = 0
-    round = 0
-
     def __init__(self, numberOfClients, totalRounds):
         self.numberOfClients = numberOfClients
         self.totalRounds = totalRounds
         self.notDrinkYet = numberOfClients
+        self.arrDrink = collections.deque([], 1)
+        self.arrNoDrink = collections.deque([], 1)
+        self.lock = threading.Condition()
+        self.lockAux = threading.Condition()
+        self.waitAllToDrink = threading.Condition()
+        self.empty = threading.Semaphore(1)
+        self.full = threading.Semaphore(0)
+        self.totalOrdered = 0
+        self.round = 0
 
     def waitToDrink(self):
         with self.waitAllToDrink:
